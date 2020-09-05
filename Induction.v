@@ -219,6 +219,56 @@ Qed.
 Theorem bin_to_nat_pres_incr : forall n:bin,
   bin_to_nat (incr n) = S (bin_to_nat n).
 Proof.
-  induction n as [|n1 IHn1|n2 IHn2].
+  assert (H: forall m: nat, m * 2 = m + m). {
+    intros.
+    rewrite -> mult_comm. simpl. rewrite <- plus_n_O. reflexivity.
+  }
+  induction n as [|n IHn|n IHn].
   - reflexivity.
-  - simpl. 
+  - simpl.
+    rewrite -> H. rewrite -> plus_n_Sm. replace (S (bin_to_nat n)) with (bin_to_nat n + 1).
+    + rewrite -> plus_assoc. reflexivity.
+    + rewrite -> plus_comm. rewrite -> plus_1_l. reflexivity.
+  - simpl. rewrite -> H. rewrite -> H. rewrite -> IHn. rewrite -> plus_n_Sm.
+    rewrite <- plus_1_l. rewrite -> plus_assoc.
+    assert (H2: forall k:nat, 1 + k + 1 + k = k + k + 2). {
+      intros. replace (k + k + 2) with (k + 2 + k).
+      + replace (k + 2) with (1 + k + 1).
+        * reflexivity.
+        * rewrite <- plus_assoc. rewrite <- plus_swap. reflexivity.
+      + rewrite <- plus_assoc. rewrite -> plus_swap. rewrite -> plus_comm. reflexivity.
+    }
+    rewrite -> H2. reflexivity.
+Qed.
+
+Fixpoint nat_to_bin_sub(n i:nat) : bin :=
+  match n with
+  | O => match i with
+    | O => Z
+    | _ => B1 Z
+  end
+  | S n' => match n <=? i with
+    | false => (nat_to_bin_sub n' (S i))
+    | true => match (evenb n) with
+      | false => B0 (nat_to_bin_sub n' 1)
+      | true => B1 (nat_to_bin_sub n' 1)
+    end
+  end
+end.
+
+Definition nat_to_bin (n:nat) : bin := (nat_to_bin_sub n 0).
+
+Example test_nat_to_bin1: bin_to_nat (nat_to_bin 0) = 0.
+Proof. reflexivity. Qed.
+Example test_nat_to_bin2: bin_to_nat (nat_to_bin 1) = 1.
+Proof. reflexivity. Qed.
+Example test_nat_to_bin3: bin_to_nat (nat_to_bin 2) = 2.
+Proof. reflexivity. Qed.
+Example test_nat_to_bin4: bin_to_nat (nat_to_bin 42) = 42.
+Proof. reflexivity. Qed.
+
+Theorem nat_bin_nat : forall n, bin_to_nat (nat_to_bin n) = n.
+Proof.
+  induction n as [| n' IHn'].
+  - reflexivity.
+  - Admitted. (* TODO. Solve Exercise: 5 stars, advanced (binary_inverse) *)
