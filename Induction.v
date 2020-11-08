@@ -126,7 +126,7 @@ Proof.
     reflexivity.
 Qed.
 
-Theorem lab_refl : forall n:nat,
+Theorem leb_refl : forall n:nat,
   true = (n <=? n).
 Proof.
   induction n as [| n' IHn'].
