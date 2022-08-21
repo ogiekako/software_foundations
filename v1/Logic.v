@@ -351,11 +351,11 @@ Proof.
 .
 
 (* Existential Quantification *)
-Definition even x := exists n : nat, x = double n.
+Definition Even x := exists n : nat, x = double n.
 
-Lemma four_is_even : even 4.
+Lemma four_is_even : Even 4.
 Proof.
-  unfold even. exists 2. reflexivity.
+  unfold Even. exists 2. reflexivity.
 Qed.
 
 Theorem exists_example : forall n,
@@ -493,15 +493,15 @@ Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop
 
 (* Proofs are first-class objects in Coq. *)
 
-Check plus_comm : forall n m : nat, n + m = m + n.
+Check add_comm : forall n m : nat, n + m = m + n.
 (* The type of the proof object is the proposition which it is a proof of. *)
 
-Lemma plus_comm3 :
+Lemma add_comm3 :
   forall x y z, x + (y + z) = (z + y) + x.
 Proof.
   intros x y z. (* x + (y + z) *)
-  rewrite plus_comm. (* y + z + x *)
-  rewrite (plus_comm y z). (* z + y + x. Proofs can be applied *)
+  rewrite add_comm. (* y + z + x *)
+  rewrite (add_comm y z). (* z + y + x. Proofs can be applied *)
   reflexivity.
 Qed.
 
@@ -577,7 +577,7 @@ Example function_equality_ex2 :
   (fun x => plus x 1) = (fun x => plus 1 x).
 Proof.
   apply functional_extensionality. intros x.
-  apply plus_comm.
+  apply add_comm.
 Qed.
 
 (* Prints Axioms theorems rely on. *)
@@ -614,34 +614,32 @@ Proof.
     apply rev_append_const.
 Qed.
 
-Lemma evenb_double : forall k, evenb (double k) = true.
+Lemma even_double : forall k, even (double k) = true.
 Proof.
   induction k as [|k' IHk'].
   - reflexivity.
   - simpl. apply IHk'.
 Qed.
 
-Check evenb_S : forall n : nat, evenb (S n) = negb (evenb n).
-
-Lemma evenb_double_conv : forall n : nat, exists k : nat,
- n = if evenb n then double k else S (double k).
+Lemma even_double_conv : forall n : nat, exists k : nat,
+ n = if even n then double k else S (double k).
 Proof.
   induction n as [|n' IHn].
   - exists 0. reflexivity.
-  - destruct (evenb n') eqn:E.
-    + (* n' is even *) destruct IHn as [k IHn].
-      exists k. rewrite evenb_S. rewrite E. simpl. rewrite IHn. reflexivity.
+  - destruct (even n') eqn:E.
+    + (* n' is Even *) destruct IHn as [k IHn].
+      exists k. rewrite even_S. rewrite E. simpl. rewrite IHn. reflexivity.
     + (* n' is odd *) destruct IHn as [k IHn].
-      exists (S k). rewrite evenb_S. rewrite E. simpl. rewrite IHn. reflexivity.
+      exists (S k). rewrite even_S. rewrite E. simpl. rewrite IHn. reflexivity.
 Qed.
 
 Theorem even_bool_prop : forall n,
-  evenb n = true <-> even n.
+  even n = true <-> Even n.
 Proof.
   intros n. split.
-  - intros H. destruct (evenb_double_conv n) as[k Hk].
+  - intros H. destruct (even_double_conv n) as[k Hk].
     rewrite H in Hk. rewrite Hk. exists k. reflexivity.
-  - intros [k H]. rewrite H. apply evenb_double.
+  - intros [k H]. rewrite H. apply even_double.
 Qed.
 
 Search eqb.
@@ -651,15 +649,15 @@ Theorem eqb_eq : forall n1 n2 : nat,
 Proof.
   intros n1 n2. split.
   - apply eqb_true.
-  - intros H. rewrite H. symmetry. apply eqb_refl.
+  - intros H. rewrite H. symmetry. rewrite eqb_refl. reflexivity.
 Qed.
 
-Example not_even_1001 : evenb 1001 = false.
+Example not_even_1001 : even 1001 = false.
 Proof.
   reflexivity.
 Qed.
 
-Example not_even_1001' : ~ (even 1001).
+Example not_even_1001' : ~ (Even 1001).
 Proof.
   rewrite <- even_bool_prop.
   unfold not.
