@@ -121,7 +121,7 @@ Module NatList.
   Proof. reflexivity. Qed.
   Fixpoint oddmembers (l:natlist) : natlist := match l with
   | nil => nil
-  | h :: t => match evenb h with
+  | h :: t => match even h with
     | true => oddmembers t
     | false => h :: oddmembers t
   end
@@ -285,7 +285,7 @@ Module NatList.
     intros l. induction l as [|n l' IHl'].
     - reflexivity.
     - simpl. rewrite -> app_length.
-      simpl. rewrite -> IHl'. rewrite -> plus_comm.
+      simpl. rewrite -> IHl'. rewrite -> add_comm.
       reflexivity.
   Qed.
 
@@ -360,7 +360,7 @@ Module NatList.
       induction l as [| n l' IHl'].
       - reflexivity.
       - simpl. 
-        rewrite <- eqb_refl.
+        rewrite eqb_refl.
         rewrite <- IHl'.
         reflexivity.
     Qed.
@@ -478,7 +478,7 @@ Definition eqb_id (x1 x2 : id) :=
   | Id n1, Id n2 => n1 =? n2
   end.
 Theorem eqb_id_refl : forall x, true = eqb_id x x.
-Proof. intros. destruct x. simpl. rewrite <- eqb_refl. reflexivity.
+Proof. intros. destruct x. simpl. rewrite eqb_refl. reflexivity.
 Qed.
 
 Module PartialMap.

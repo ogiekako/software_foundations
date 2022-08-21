@@ -25,8 +25,8 @@ Proof.
 Qed.
 
 Theorem silly_ex :
-  (forall n, evenb n = true -> oddb (S n) = true) ->
-  evenb 2 = true -> oddb 3 = true.
+  (forall n, even n = true -> odd (S n) = true) ->
+  even 2 = true -> odd 3 = true.
 Proof.
   intros eq1 eq2. apply eq1. apply eq2. Qed
 .
@@ -312,7 +312,7 @@ Proof.
   simpl.
   unfold square.
   rewrite mult_assoc.
-  assert (H: n*m*n = n*n*m). { rewrite mult_comm. apply mult_assoc. }
+  assert (H: n*m*n = n*n*m). { rewrite mul_comm. apply mult_assoc. }
   rewrite H. rewrite mult_assoc. reflexivity. Qed
 .
 
@@ -395,7 +395,7 @@ Definition sillyfun1 (n : nat) : bool :=
   else false.
 
   Theorem sillyfun1_odd_FAILED : forall (n : nat),
-  sillyfun1 n = true -> oddb n = true.
+  sillyfun1 n = true -> odd n = true.
 Proof.
   intros n eq. unfold sillyfun1 in eq.
   destruct (n =? 3).
@@ -403,7 +403,7 @@ Proof.
 .
 
 Theorem sillyfun1_odd : forall (n : nat),
-  sillyfun1 n = true -> oddb n = true.
+  sillyfun1 n = true -> odd n = true.
 Proof.
   intros n eq. unfold sillyfun1 in eq.
   destruct (n =? 3) eqn:E.
@@ -455,7 +455,7 @@ Theorem eqb_trans : forall n m p,
 Proof.
   intros n m p H1 H2.
   apply eqb_true in H1. apply eqb_true in H2.
-  rewrite H1. rewrite H2. rewrite <- eqb_refl. reflexivity.
+  rewrite H1. rewrite H2. rewrite eqb_refl. reflexivity.
 Qed
 .
 
@@ -496,11 +496,11 @@ Fixpoint existsb {X:Type} (test:X->bool) (l:list X) : bool :=
   end
 .
 
-Example test_forallb_1 : forallb oddb [1;3;5;7;9] = true.
+Example test_forallb_1 : forallb odd [1;3;5;7;9] = true.
 Proof. reflexivity. Qed.
 Example test_forallb_2 : forallb negb [false;false] = true.
 Proof. reflexivity. Qed.
-Example test_forallb_3 : forallb evenb [0;2;4;5] = false.
+Example test_forallb_3 : forallb even [0;2;4;5] = false.
 Proof. reflexivity. Qed.
 Example test_forallb_4 : forallb (eqb 5) [] = true.
 Proof. reflexivity. Qed.
@@ -509,9 +509,9 @@ Example test_existsb_1 : existsb (eqb 5) [0;2;3;6] = false.
 Proof. reflexivity. Qed.
 Example test_existsb_2 : existsb (andb true) [true;true;false] = true.
 Proof. reflexivity. Qed.
-Example test_existsb_3 : existsb oddb [1;0;0;0;0;3] = true.
+Example test_existsb_3 : existsb odd [1;0;0;0;0;3] = true.
 Proof. reflexivity. Qed.
-Example test_existsb_4 : existsb evenb [] = false.
+Example test_existsb_4 : existsb even [] = false.
 Proof. reflexivity. Qed.
 
 Definition existsb' {X:Type} (test:X->bool) (l:list X) : bool :=
@@ -522,9 +522,9 @@ Example test_existsb_1' : existsb' (eqb 5) [0;2;3;6] = false.
 Proof. reflexivity. Qed.
 Example test_existsb_2' : existsb' (andb true) [true;true;false] = true.
 Proof. reflexivity. Qed.
-Example test_existsb_3' : existsb' oddb [1;0;0;0;0;3] = true.
+Example test_existsb_3' : existsb' odd [1;0;0;0;0;3] = true.
 Proof. reflexivity. Qed.
-Example test_existsb_4' : existsb' evenb [] = false.
+Example test_existsb_4' : existsb' even [] = false.
 Proof. reflexivity. Qed.
 
 Theorem existsb_existsb' : forall (X:Type) (test:X->bool) (l:list X),
