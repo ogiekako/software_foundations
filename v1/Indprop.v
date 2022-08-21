@@ -142,7 +142,7 @@ Proof.
 Qed.
 
 Lemma ev_even_firsttry : forall n,
-  ev n -> even n.
+  ev n -> Even n.
 Proof.
   intros n E. inversion E as [EQ' | n' E' EQ'].
   - exists 0. reflexivity.
@@ -152,12 +152,12 @@ Abort.
 
 (* Induction on Evidence *)
 Lemma ev_even : forall n,
-  ev n -> even n.
+  ev n -> Even n.
 Proof.
   intros n E (* = ev n *).
   (* 
     E: ev n
-    Goal: even n 
+    Goal: Even n 
   *)
   induction E as [
     (* E = ev_0 : ev 0. *)
@@ -165,21 +165,21 @@ Proof.
     (*
       The value (E : ev n) is destructed, together with the type parameter n.
       E = ev_SS n' (E':ev n') : ev (S (S n'))
-      IH: even n'  (* The goal for smaller type parameters can be assumed. *)
+      IH: Even n'  (* The goal for smaller type parameters can be assumed. *)
     *)
       n' E' IH
   ].
   - (* E = ev_0 *) exists 0. reflexivity.
-  - unfold even in IH. destruct IH as [k Hk].
+  - unfold Even in IH. destruct IH as [k Hk].
     rewrite Hk. exists (S k). reflexivity.
 Qed.
 
 Theorem ev_even_iff : forall n,
-  ev n <-> even n.
+  ev n <-> Even n.
 Proof.
   intros n. split.
   - apply ev_even.
-  - unfold even. intros [k Hk]. rewrite Hk. apply ev_double.
+  - unfold Even. intros [k Hk]. rewrite Hk. apply ev_double.
 Qed.
 
 Theorem ev_sum : forall n m, ev n -> ev m -> ev (n + m).
@@ -225,16 +225,16 @@ Proof.
     rewrite <- ev'_ev in Hnp.
     apply (ev'_sum (n+m) (n+p) Hnm Hnp).
   }
-  rewrite plus_assoc in H. assert (H2: (double n) + (m + p) = n + m + n + p). {
-    Check plus_assoc : forall n m p : nat, n + (m + p) = (n + m) + p.
+  rewrite add_assoc in H. assert (H2: (double n) + (m + p) = n + m + n + p). {
+    Check add_assoc : forall n m p : nat, n + (m + p) = (n + m) + p.
     (*
       (n + n) + (m + p)
       ((n + n) + m) + p
       ((n + m) + n) + p
     *)
-    rewrite double_plus. rewrite plus_assoc.
-    rewrite <- (plus_assoc n m n). rewrite <- (plus_assoc n n m).
-    rewrite (plus_comm n m).
+    rewrite double_plus. rewrite add_assoc.
+    rewrite <- (add_assoc n m n). rewrite <- (add_assoc n n m).
+    rewrite (add_comm n m).
     reflexivity.
   }
   rewrite <- H2 in H.
@@ -349,7 +349,7 @@ Proof.
   split.
   - assert (H2: n1 <= n1 + n2). { apply le_plus_l. }
     apply (le_trans _ _ _ H2 H1).
-  - assert (H2: n2 <= n1 + n2). { rewrite plus_comm. apply le_plus_l. }
+  - assert (H2: n2 <= n1 + n2). { rewrite add_comm. apply le_plus_l. }
     apply (le_trans _ _ _ H2 H1).
 Qed.
 
@@ -359,13 +359,13 @@ Proof.
   induction n as [| n IHn].
   - intros m p q H. left. apply O_le_n.
   - intros m p q H.
-    rewrite plus_Sn_m, plus_comm, <-plus_Sn_m, plus_comm in H.
+    rewrite plus_Sn_m, add_comm, <-plus_Sn_m, add_comm in H.
     destruct p.
     + right. simpl in H. assert (H2: m <= n + S m). {
-      rewrite plus_comm, plus_Sn_m, plus_comm, <-plus_Sn_m, plus_comm. apply le_plus_l.
+      rewrite add_comm, plus_Sn_m, add_comm, <-plus_Sn_m, add_comm. apply le_plus_l.
     }
     apply (le_trans _ _ _ H2 H).
-    + rewrite plus_Sn_m, (plus_comm p q), <- plus_Sn_m, (plus_comm (S q) p) in H.
+    + rewrite plus_Sn_m, (add_comm p q), <- plus_Sn_m, (add_comm (S q) p) in H.
       apply IHn in H. destruct H.
       * left. apply n_le_m___Sn_le_Sm. apply H.
       * right. apply Sn_le_Sm__n_le_m. apply H.
@@ -389,7 +389,7 @@ Proof.
   }
     apply (le_trans _ _ _ H2 H).
   - assert (H2: S n2 <= S (n1 + n2)). {
-    apply n_le_m___Sn_le_Sm. rewrite plus_comm. apply le_plus_l.
+    apply n_le_m___Sn_le_Sm. rewrite add_comm. apply le_plus_l.
   }
     apply (le_trans _ _ _ H2 H).
 Qed.
@@ -454,14 +454,14 @@ Proof.
     + rewrite plus_Sn_m. rewrite IHR. reflexivity.
     + rewrite <- plus_n_Sm. rewrite IHR. reflexivity.
     + rewrite plus_Sn_m in IHR. injection IHR as IHR. rewrite <- plus_n_Sm in IHR. injection IHR as IHR. apply IHR.
-    + rewrite plus_comm. apply IHR.
+    + rewrite add_comm. apply IHR.
   - generalize dependent m. generalize dependent n. generalize dependent o.
     induction o.
     + intros n m H. apply Plus.plus_is_O in H. destruct H as [H1 H2]. rewrite H1, H2. apply c1.
     + induction n.
-      * intros m H. rewrite plus_comm in H. simpl in H. rewrite H. 
+      * intros m H. rewrite add_comm in H. simpl in H. rewrite H. 
         assert (H2: R o 0 o). {
-          apply IHo. rewrite plus_comm. reflexivity.
+          apply IHo. rewrite add_comm. reflexivity.
         }
         apply (c2 _ _ _ H2).
       * intros m H.
@@ -925,7 +925,7 @@ Qed.
 Lemma le_plus_trans : forall n m p : nat, n <= m -> n <= m + p.
 Proof.
   induction p.
-  - rewrite plus_comm. simpl. intros H. apply H.
+  - rewrite add_comm. simpl. intros H. apply H.
   - intros H. apply IHp in H. rewrite <- plus_n_Sm. apply le_S. apply H.
 Qed.
 
@@ -973,11 +973,11 @@ Proof.
         ** apply le_plus_trans. apply H3.
         ** intros m. rewrite app_assoc, app_assoc. apply MApp. rewrite <- app_assoc. apply H4. apply Hmatch2.
     + apply IH2 in Hle. destruct Hle as [s3 [s4 [s5 [H1 [H2 [H3 H4]]]]]]. destruct (length s1 <=? pumping_constant re1) eqn:E.
-      * (* length s1 <= pumping_constant re1 *) exists (s1++s3), s4, s5. split. rewrite H1. rewrite app_assoc. reflexivity. split. apply H2. split. rewrite app_length. rewrite <- plus_assoc. apply leb_iff in E. apply plus_le_compat. apply E. apply H3. intros m. rewrite <- app_assoc. apply MApp. apply Hmatch1. apply H4.
+      * (* length s1 <= pumping_constant re1 *) exists (s1++s3), s4, s5. split. rewrite H1. rewrite app_assoc. reflexivity. split. apply H2. split. rewrite app_length. rewrite <- add_assoc. apply leb_iff in E. apply plus_le_compat. apply E. apply H3. intros m. rewrite <- app_assoc. apply MApp. apply Hmatch1. apply H4.
       * (* pumping_constant re1 < length s1 *) apply leb_false_ltb in E. apply ltb_leb in E. apply leb_iff in E. apply IH1 in E. destruct E as [s6 [s7 [s8 [H5 [H6 [H7 H8]]]]]]. exists s6, s7, (s8 ++ s2). split. rewrite H5. rewrite <- app_assoc, <- app_assoc. reflexivity. split. apply H6. split. apply le_plus_trans. apply H7. intros m. rewrite app_assoc, app_assoc. apply MApp. rewrite <- app_assoc. apply H8. apply Hmatch2.
   - (* MUnionL *) simpl. intros Hle. apply plus_le in Hle. destruct Hle as [Hle1 Hle2]. apply IH in Hle1. destruct Hle1 as [s2 [s3 [s4 [H1 [H2 [H3 H4]]]]]]. exists s2, s3, s4. split. apply H1. split. apply H2. split. apply le_plus_trans. apply H3. intros m. apply MUnionL. apply H4.
 
-  - (* MUnionR *) simpl. intros Hle. apply plus_le in Hle. destruct Hle as [Hle1 Hle2]. apply IH in Hle2. destruct Hle2 as [s1 [s3 [s4 [H1 [H2 [H3 H4]]]]]]. exists s1, s3, s4. split. apply H1. split. apply H2. split. rewrite (plus_comm (pumping_constant s2)). apply le_plus_trans. apply H3. intros m. apply MUnionR. apply H4.
+  - (* MUnionR *) simpl. intros Hle. apply plus_le in Hle. destruct Hle as [Hle1 Hle2]. apply IH in Hle2. destruct Hle2 as [s1 [s3 [s4 [H1 [H2 [H3 H4]]]]]]. exists s1, s3, s4. split. apply H1. split. apply H2. split. rewrite (add_comm (pumping_constant s2)). apply le_plus_trans. apply H3. intros m. apply MUnionR. apply H4.
 
   - simpl. intros contra. inversion contra. 
     apply pumping_constant_0_false in H0. destruct H0.
@@ -1165,7 +1165,7 @@ Proof.
       + injection Hl as Hx. rewrite H. apply pal_add.
         assert (Hl: length rl' <= n). {
           apply leb_iff in Hn. simpl in Hn. apply leb_iff in Hn.
-          rewrite H in Hn. rewrite app_length in Hn. simpl in Hn. rewrite plus_comm in Hn. simpl in Hn.
+          rewrite H in Hn. rewrite app_length in Hn. simpl in Hn. rewrite add_comm in Hn. simpl in Hn.
           apply Le.le_Sn_le. apply Hn.
         }
         assert (Hr: rl' = rev rl'). {
@@ -1234,3 +1234,4 @@ Theorem pigeonhole_principle : forall (X:Type) (l1 l2: list X),
     length l2 < length l1 -> repeats l1.
 Proof.
   intros X l1.
+  Admitted. (* TODO: prove this. *)
